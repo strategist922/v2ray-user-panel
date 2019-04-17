@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'com.gthub.lihang941'
+version '1.0'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+compileJava.dependsOn(processResources)
+compileJava {
+    options.encoding = "UTF-8"
+}
+
+repositories {
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile 'in.zhaoj:v2ray:1.0'
+    compile 'io.vertx:vertx-web:3.7.0'
+    compileOnly "org.projectlombok:lombok:1.18.4"
+}
+
+jar {
+    enabled = true
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10'
+}
