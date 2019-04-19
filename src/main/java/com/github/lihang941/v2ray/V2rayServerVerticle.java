@@ -73,8 +73,10 @@ public class V2rayServerVerticle extends AbstractVerticle {
                         .build());
             } catch (StatusRuntimeException e) {
                 if (e.getStatus().getDescription().endsWith("User " + addUserEvent.getEmail() + " already exists.")) {
-                    throw new ErrorMessageException(addUserEvent.getEmail() + " 不存在,删除用户失败");
+                    e.printStackTrace();
+                    throw new ErrorMessageException(addUserEvent.getEmail() + " 已存在,添加用户失败");
                 } else if (e.getStatus().getDescription().endsWith("handler not found: " + tag)) {
+                    e.printStackTrace();
                     throw new ErrorMessageException("v2ray.tag 不存在,请检查配置项");
                 } else {
                     throw e;
@@ -126,6 +128,9 @@ public class V2rayServerVerticle extends AbstractVerticle {
     private void initUsers() {
 
         for (com.github.lihang941.v2ray.bean.User user : userService.getUsers().values()) {
+            if (user.getStatus() != 127) {
+                continue;
+            }
             vertx.eventBus().send(AddUserEvent.class.getName(), new AddUserEvent()
                     .setAlterId(user.getAlterId())
                     .setEmail(user.getEmail())
@@ -133,7 +138,8 @@ public class V2rayServerVerticle extends AbstractVerticle {
                 if (res.succeeded()) {
                     logger.info("add user = " + user.getEmail() + " success");
                 } else {
-                    logger.info("add user = " + user.getEmail() + " failure");
+                    res.cause().printStackTrace();
+                    logger.info("add user = " + user.getEmail() + " failure ");
                 }
             });
         }
@@ -141,12 +147,17 @@ public class V2rayServerVerticle extends AbstractVerticle {
 
 
     private void removeUsers() {
+
         for (com.github.lihang941.v2ray.bean.User user : userService.getUsers().values()) {
+            if (user.getStatus() != 127) {
+                continue;
+            }
             vertx.eventBus().send(DeleteUserEvent.class.getName(), new DeleteUserEvent()
                     .setEmail(user.getEmail()), res -> {
                 if (res.succeeded()) {
                     logger.info("remove user = " + user.getEmail() + " success");
                 } else {
+                    res.cause().printStackTrace();
                     logger.info("remove user = " + user.getEmail() + " failure");
                 }
             });
@@ -155,8 +166,8 @@ public class V2rayServerVerticle extends AbstractVerticle {
 
 
     private void registerEventCodec() {
-        vertx.eventBus().registerCodec(new EventMessageCodec<>(AddUserEvent.class));
-        vertx.eventBus().registerCodec(new EventMessageCodec<>(DeleteUserEvent.class));
+        vertx.eventBus().registerDefaultCodec(AddUserEvent.class, new EventMessageCodec<>(AddUserEvent.class));
+        vertx.eventBus().registerDefaultCodec(DeleteUserEvent.class, new EventMessageCodec<>(DeleteUserEvent.class));
     }
 
     private void unregisterEventCodec() {

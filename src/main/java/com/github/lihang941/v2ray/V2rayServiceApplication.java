@@ -1,6 +1,7 @@
 package com.github.lihang941.v2ray;
 
 import com.github.lihang941.v2ray.tool.FileTool;
+import com.github.lihang941.v2ray.tool.Logger;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -14,6 +15,8 @@ import java.io.InputStream;
  * @since : 2019/4/17
  */
 public class V2rayServiceApplication {
+
+    private static Logger logger = new Logger(V2rayServiceApplication.class.getName());
 
 
     public static void main(String[] args) {
@@ -33,9 +36,12 @@ public class V2rayServiceApplication {
                 try {
                     JsonObject jsonObject = FileTool.readFileToJson(file.getAbsolutePath());
                     config = config.mergeIn(jsonObject, true);
+                    logger.info("选择配置文件 :" + file.getAbsolutePath());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                logger.info("选择配置文件 classPath : /service.json");
             }
             return config;
         } catch (IOException e) {

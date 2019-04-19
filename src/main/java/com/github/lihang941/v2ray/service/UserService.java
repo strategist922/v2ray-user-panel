@@ -34,7 +34,7 @@ public class UserService {
                 User user = jsonObject.getJsonObject(key).mapTo(User.class);
                 users.put(key, user);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("读取用户数据失败" + e.getMessage());
         }
     }
@@ -42,7 +42,7 @@ public class UserService {
     private void wirte() {
         try {
             FileTool.wirte(userJsonPath, Json.encode(users));
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("写入用户数据失败" + e.getMessage());
         }
     }

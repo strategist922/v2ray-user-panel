@@ -1,7 +1,7 @@
 {
   "v2ray": {
     "host": "127.0.0.1",
-    "port": 8088,
+    "port": 5745,
     "level": 0,
     "tag": "main"
   },

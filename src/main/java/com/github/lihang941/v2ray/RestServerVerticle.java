@@ -41,9 +41,11 @@ public class RestServerVerticle extends AbstractVerticle {
         onInitRouter();
     }
 
-    public void onInitRouter() {
+    private void onInitRouter() {
         router = Router.router(vertx);
         new UserResource().onInit(router);
+
+        // 跨域
         router.route().handler(CorsHandler.create("*")
                 .allowedMethods(new HashSet<>(Arrays.asList(
                         HttpMethod.GET,
@@ -61,7 +63,10 @@ public class RestServerVerticle extends AbstractVerticle {
 
 
         if (!staticFilePath.exists()) {
-            staticFilePath.mkdirs();
+            if (staticFilePath.mkdirs()) {
+                LOGGER.info("create static folder = " + staticFilePath.getAbsolutePath() + " success");
+            }
+
         }
 
         if (!staticFilePath.isDirectory()) {
