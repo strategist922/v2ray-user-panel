@@ -28,4 +28,8 @@ public class User {
     private String[] permission;
     // 状态
     private int status;
+    //
+    private int alterId;
+
+
 }

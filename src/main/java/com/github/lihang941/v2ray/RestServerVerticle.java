@@ -5,9 +5,17 @@ import com.github.lihang941.v2ray.tool.Logger;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+
 
 /**
  * @author : lihang941
@@ -36,6 +44,34 @@ public class RestServerVerticle extends AbstractVerticle {
     public void onInitRouter() {
         router = Router.router(vertx);
         new UserResource().onInit(router);
+        router.route().handler(CorsHandler.create("*")
+                .allowedMethods(new HashSet<>(Arrays.asList(
+                        HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.DELETE,
+                        HttpMethod.HEAD,
+                        HttpMethod.OPTIONS,
+                        HttpMethod.PUT,
+                        HttpMethod.OPTIONS)))
+                .exposedHeaders(new HashSet<>(Arrays.asList("Origin", "X-Requested-With", "Accept", "User-Agent", "Authorization", "Content-Type")))
+                .allowedHeaders(new HashSet<>(Arrays.asList("Origin", "X-Requested-With", "Accept", "User-Agent", "Authorization", "Content-Type", "offset", "size", "PlatformType")))
+        );
+
+        File staticFilePath = new File(staticPath);
+
+
+        if (!staticFilePath.exists()) {
+            staticFilePath.mkdirs();
+        }
+
+        if (!staticFilePath.isDirectory()) {
+            throw new RuntimeException("请检查 http.static.path 设置");
+        }
+
+        router.route().path("/static/*").handler(StaticHandler.create()
+                .setAllowRootFileSystemAccess(true)
+                .setWebRoot(new File(staticPath).getAbsolutePath()));
+
     }
 
 

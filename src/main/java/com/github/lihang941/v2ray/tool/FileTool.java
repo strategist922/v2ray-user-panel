@@ -1,12 +1,8 @@
 package com.github.lihang941.v2ray.tool;
 
-import com.github.lihang941.v2ray.bean.User;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.util.Map;
 
 /**
  * @author : lihang941

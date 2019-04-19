@@ -20,7 +20,6 @@ public class Logger {
         return formatter.format(new Date()) + " - " + type + " [" + name + "] - " + msg;
     }
 
-
     public void info(String msg) {
         System.out.println(format("INFO", msg));
     }
